@@ -11,13 +11,13 @@
     "react-scripts": "^5.0.1"
   },
   "scripts": {
-    "lint": "eslint --ext .jsx,.js src",
+    "lint": "oxlint --react-plugin --jsx-a11y-plugin --react-perf-plugin src",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "eject": "react-scripts eject"
   },
-  "eslintConfig": {
-    "extends": "react-app"
+  "devDependencies": {
+    "oxlint": "^1.0.0"
   },
   "browserslist": [
     ">0.2%",

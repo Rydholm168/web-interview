@@ -1,7 +1,7 @@
 {
   "type": "module",
   "scripts": {
-    "lint": "eslint --ext .js src",
+    "lint": "oxlint src",
     "start": "node --watch src/index.js"
   },
   "dependencies": {
@@ -9,6 +9,6 @@
     "graphql": "^16.13.2"
   },
   "devDependencies": {
-    "eslint": "^8.57.0"
+    "oxlint": "^1.58.0"
   }
 }

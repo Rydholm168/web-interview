@@ -37,7 +37,8 @@ export const TodoListForm = ({ todoList }) => {
   const [deleteTodo] = useMutation(DELETE_TODO, { refetchQueries: refetchTodoLists })
 
   useEffect(() => {
-    return () => Object.values(debounceTimers.current).forEach(clearTimeout)
+    const timers = debounceTimers.current
+    return () => Object.values(timers).forEach(clearTimeout)
   }, [])
 
   const debouncedUpdate = useCallback(
