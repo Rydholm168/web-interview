@@ -1,13 +1,12 @@
-import express from 'express'
-import cors from 'cors'
+import { ApolloServer } from '@apollo/server'
+import { startStandaloneServer } from '@apollo/server/standalone'
+import { typeDefs } from './schema.js'
+import { resolvers } from './resolvers.js'
 
-const app = express()
+const server = new ApolloServer({ typeDefs, resolvers })
 
-app.use(cors())
-app.use(express.json())
+const { url } = await startStandaloneServer(server, {
+  listen: { port: 3001 },
+})
 
-const PORT = 3001
-
-app.get('/', (req, res) => res.send('Hello World!'))
-
-app.listen(PORT, () => console.log(`Example app listening on port ${PORT}!`))
+console.log(`Server running at ${url}`)

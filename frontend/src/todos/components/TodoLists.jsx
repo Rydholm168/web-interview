@@ -1,4 +1,4 @@
-import React, { Fragment, useState, useEffect } from 'react'
+import React, { Fragment, useState } from 'react'
 import {
   Card,
   CardContent,
@@ -7,69 +7,52 @@ import {
   ListItemText,
   ListItemIcon,
   Typography,
+  CircularProgress,
 } from '@mui/material'
 import ReceiptIcon from '@mui/icons-material/Receipt'
+import CheckCircleIcon from '@mui/icons-material/CheckCircle'
+import { useQuery } from '@apollo/client/react'
+import { GET_TODO_LISTS } from '../graphql'
 import { TodoListForm } from './TodoListForm'
 
-// Simulate network
-const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
-
-const fetchTodoLists = () => {
-  return sleep(1000).then(() =>
-    Promise.resolve({
-      '0000000001': {
-        id: '0000000001',
-        title: 'First List',
-        todos: ['First todo of first list!'],
-      },
-      '0000000002': {
-        id: '0000000002',
-        title: 'Second List',
-        todos: ['First todo of second list!'],
-      },
-    })
-  )
-}
-
 export const TodoLists = ({ style }) => {
-  const [todoLists, setTodoLists] = useState({})
   const [activeList, setActiveList] = useState()
+  const { data, loading, error } = useQuery(GET_TODO_LISTS)
 
-  useEffect(() => {
-    fetchTodoLists().then(setTodoLists)
-  }, [])
+  if (loading) return <CircularProgress />
+  if (error) return <Typography color='error'>Error: {error.message}</Typography>
 
-  if (!Object.keys(todoLists).length) return null
+  const todoLists = data.todoLists
+
+  if (!todoLists.length) return null
+
+  const activeListData = todoLists.find((list) => list.id === activeList)
+
   return (
     <Fragment>
       <Card style={style}>
         <CardContent>
           <Typography component='h2'>My Todo Lists</Typography>
           <List>
-            {Object.keys(todoLists).map((key) => (
-              <ListItemButton key={key} onClick={() => setActiveList(key)}>
+            {todoLists.map((list) => (
+              <ListItemButton key={list.id} onClick={() => setActiveList(list.id)}>
                 <ListItemIcon>
-                  <ReceiptIcon />
+                  {list.isComplete ? <CheckCircleIcon color='success' /> : <ReceiptIcon />}
                 </ListItemIcon>
-                <ListItemText primary={todoLists[key].title} />
+                <ListItemText
+                  primary={list.title}
+                  sx={
+                    list.isComplete
+                      ? { textDecoration: 'line-through', color: 'text.secondary' }
+                      : {}
+                  }
+                />
               </ListItemButton>
             ))}
           </List>
         </CardContent>
       </Card>
-      {todoLists[activeList] && (
-        <TodoListForm
-          key={activeList} // use key to make React recreate component to reset internal state
-          todoList={todoLists[activeList]}
-          saveTodoList={(id, { todos }) => {
-            const listToUpdate = todoLists[id]
-            setTodoLists({
-              ...todoLists,
-              [id]: { ...listToUpdate, todos },
-            })
-          }}
-        />
-      )}
+      {activeListData && <TodoListForm key={activeList} todoList={activeListData} />}
     </Fragment>
   )
 }
