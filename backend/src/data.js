@@ -33,13 +33,11 @@ const getListOrThrow = (todoListId) => {
   return list
 }
 
-const clone = (obj) => structuredClone(obj)
-
-export const getTodoLists = () => Object.values(todoLists).map(clone)
+export const getTodoLists = () => Object.values(todoLists).map(structuredClone)
 
 export const getTodoList = (id) => {
   const list = todoLists[id]
-  return list ? clone(list) : undefined
+  return list ? structuredClone(list) : undefined
 }
 
 export const addTodo = (todoListId, text) => {
@@ -51,7 +49,7 @@ export const addTodo = (todoListId, text) => {
     dueDate: null,
   }
   list.todos.push(todo)
-  return clone(todo)
+  return structuredClone(todo)
 }
 
 export const updateTodo = (todoListId, todoId, fields) => {
@@ -59,9 +57,8 @@ export const updateTodo = (todoListId, todoId, fields) => {
   const todo = list.todos.find((t) => t.id === todoId)
   if (!todo) throw new Error(`Todo ${todoId} not found`)
   Object.assign(todo, fields)
-  return clone(todo)
+  return structuredClone(todo)
 }
-
 
 export const deleteTodo = (todoListId, todoId) => {
   const list = getListOrThrow(todoListId)

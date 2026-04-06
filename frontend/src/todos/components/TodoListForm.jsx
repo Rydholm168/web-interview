@@ -33,7 +33,7 @@ export const TodoListForm = ({ todoList }) => {
   const debounceTimers = useRef({})
 
   const [addTodo] = useMutation(ADD_TODO, { refetchQueries: refetchTodoLists })
-  const [updateTodo] = useMutation(UPDATE_TODO)
+  const [updateTodo] = useMutation(UPDATE_TODO, { refetchQueries: refetchTodoLists })
   const [deleteTodo] = useMutation(DELETE_TODO, { refetchQueries: refetchTodoLists })
 
   useEffect(() => {
@@ -74,7 +74,6 @@ export const TodoListForm = ({ todoList }) => {
                         todoId: todo.id,
                         completed: !todo.completed,
                       },
-                      refetchQueries: refetchTodoLists,
                     })
                   }
                 />
@@ -115,11 +114,15 @@ export const TodoListForm = ({ todoList }) => {
                   sx={{ margin: '8px' }}
                   size='small'
                   color='secondary'
-                  onClick={() =>
+                  onClick={() => {
+                    if (debounceTimers.current[todo.id]) {
+                      clearTimeout(debounceTimers.current[todo.id])
+                      delete debounceTimers.current[todo.id]
+                    }
                     deleteTodo({
                       variables: { todoListId: todoList.id, todoId: todo.id },
                     })
-                  }
+                  }}
                 >
                   <DeleteIcon />
                 </Button>
@@ -128,7 +131,6 @@ export const TodoListForm = ({ todoList }) => {
           })}
           <CardActions>
             <Button
-              type='button'
               color='primary'
               onClick={() =>
                 addTodo({

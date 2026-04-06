@@ -1,33 +1,39 @@
 import { gql } from '@apollo/client'
 
+const TODO_FIELDS = gql`
+  fragment TodoFields on Todo {
+    id
+    text
+    completed
+    dueDate
+  }
+`
+
 export const GET_TODO_LISTS = gql`
+  ${TODO_FIELDS}
   query GetTodoLists {
     todoLists {
       id
       title
       isComplete
       todos {
-        id
-        text
-        completed
-        dueDate
+        ...TodoFields
       }
     }
   }
 `
 
 export const ADD_TODO = gql`
+  ${TODO_FIELDS}
   mutation AddTodo($todoListId: ID!, $text: String!) {
     addTodo(todoListId: $todoListId, text: $text) {
-      id
-      text
-      completed
-      dueDate
+      ...TodoFields
     }
   }
 `
 
 export const UPDATE_TODO = gql`
+  ${TODO_FIELDS}
   mutation UpdateTodo(
     $todoListId: ID!
     $todoId: ID!
@@ -42,10 +48,7 @@ export const UPDATE_TODO = gql`
       completed: $completed
       dueDate: $dueDate
     ) {
-      id
-      text
-      completed
-      dueDate
+      ...TodoFields
     }
   }
 `
