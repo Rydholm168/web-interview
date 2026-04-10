@@ -24,7 +24,8 @@ const getRemainingText = (dueDate) => {
   const diffMs = due - now
   const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24))
   if (diffDays === 0) return { text: 'Due today', color: 'warning' }
-  if (diffDays > 0) return { text: `${diffDays} day${diffDays === 1 ? '' : 's'} left`, color: 'default' }
+  if (diffDays > 0)
+    return { text: `${diffDays} day${diffDays === 1 ? '' : 's'} left`, color: 'default' }
   const overdue = Math.abs(diffDays)
   return { text: `Overdue by ${overdue} day${overdue === 1 ? '' : 's'}`, color: 'error' }
 }
@@ -51,7 +52,7 @@ export const TodoListForm = ({ todoList }) => {
         delete debounceTimers.current[todoId]
       }, 300)
     },
-    [updateTodo]
+    [updateTodo],
   )
 
   return (

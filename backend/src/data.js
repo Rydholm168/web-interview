@@ -33,7 +33,7 @@ const getListOrThrow = (todoListId) => {
   return list
 }
 
-export const getTodoLists = () => Object.values(todoLists).map(structuredClone)
+export const getTodoLists = () => Object.values(todoLists).map((v) => structuredClone(v))
 
 export const getTodoList = (id) => {
   const list = todoLists[id]
