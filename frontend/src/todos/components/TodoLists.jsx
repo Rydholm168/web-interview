@@ -69,7 +69,7 @@ export const TodoLists = ({ style }) => {
               onClick={() => setActiveList(list.id)}
               sx={{
                 alignItems: 'center',
-                backgroundColor: isActive ? '#f2f2f2' : 'transparent',
+                backgroundColor: 'transparent',
                 borderBottom: isActive ? '3px solid #111111' : '3px solid transparent',
                 color: '#262626',
                 display: 'flex',
