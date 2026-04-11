@@ -1,4 +1,4 @@
-import React, { useRef, useCallback, useEffect } from 'react'
+import React, { useRef, useCallback, useEffect, useState } from 'react'
 import {
   TextField,
   Card,
@@ -32,6 +32,7 @@ const getRemainingText = (dueDate) => {
 
 export const TodoListForm = ({ todoList }) => {
   const debounceTimers = useRef({})
+  const [saveStatus, setSaveStatus] = useState({})
 
   const [addTodo] = useMutation(ADD_TODO, { refetchQueries: refetchTodoLists })
   const [updateTodo] = useMutation(UPDATE_TODO, { refetchQueries: refetchTodoLists })
@@ -47,8 +48,11 @@ export const TodoListForm = ({ todoList }) => {
       if (debounceTimers.current[todoId]) {
         clearTimeout(debounceTimers.current[todoId])
       }
+      setSaveStatus((prev) => ({ ...prev, [todoId]: 'saving' }))
       debounceTimers.current[todoId] = setTimeout(() => {
         updateTodo({ variables: { todoListId, todoId, ...fields } })
+          .then(() => setSaveStatus((prev) => ({ ...prev, [todoId]: 'saved' })))
+          .catch(() => setSaveStatus((prev) => ({ ...prev, [todoId]: 'error' })))
         delete debounceTimers.current[todoId]
       }, 300)
     },
@@ -128,6 +132,19 @@ export const TodoListForm = ({ todoList }) => {
                 >
                   <DeleteIcon />
                 </Button>
+                {saveStatus[todo.id] && (
+                  <Typography
+                    variant='caption'
+                    sx={{ minWidth: '50px' }}
+                    color={saveStatus[todo.id] === 'error' ? 'error' : 'text.secondary'}
+                  >
+                    {saveStatus[todo.id] === 'saving'
+                      ? 'Saving...'
+                      : saveStatus[todo.id] === 'saved'
+                        ? 'Saved'
+                        : 'Error'}
+                  </Typography>
+                )}
               </div>
             )
           })}
