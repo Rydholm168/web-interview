@@ -1,9 +1,7 @@
 import React, { useRef, useCallback, useEffect, useState } from 'react'
 import {
   TextField,
-  Card,
-  CardContent,
-  CardActions,
+  Box,
   Button,
   Typography,
   Checkbox,
@@ -15,6 +13,14 @@ import { useMutation } from '@apollo/client/react'
 import { GET_TODO_LISTS, ADD_TODO, UPDATE_TODO, DELETE_TODO } from '../graphql'
 
 const refetchTodoLists = [{ query: GET_TODO_LISTS }]
+
+const sectionStyle = {
+  backgroundColor: '#ffffff',
+  border: '1px solid #e7e3dc',
+  borderRadius: '6px',
+  margin: '0 1rem',
+  padding: '1.5rem',
+}
 
 const getRemainingText = (dueDate) => {
   if (!dueDate) return null
@@ -60,19 +66,34 @@ export const TodoListForm = ({ todoList }) => {
   )
 
   return (
-    <Card sx={{ margin: '0 1rem' }}>
-      <CardContent>
-        <Typography component='h2'>{todoList.title}</Typography>
-        <div style={{ display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
+    <Box sx={sectionStyle}>
+      <Typography component='h2' sx={{ color: '#1b1b1b', fontSize: '2rem', marginBottom: '1rem' }}>
+        {todoList.title}
+      </Typography>
+      <div style={{ display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
           {todoList.todos.map((todo, index) => {
             const remaining = getRemainingText(todo.dueDate)
             return (
-              <div key={todo.id} style={{ display: 'flex', alignItems: 'center' }}>
-                <Typography sx={{ margin: '8px' }} variant='h6'>
+              <Box
+                key={todo.id}
+                sx={{
+                  alignItems: 'center',
+                  borderBottom:
+                    index === todoList.todos.length - 1 ? 'none' : '1px solid #f0ece5',
+                  display: 'flex',
+                  gap: '0.5rem',
+                  paddingBlock: '1rem',
+                }}
+              >
+                <Typography sx={{ color: '#1f1f1f', marginRight: '0.25rem', minWidth: '1.75rem' }} variant='h6'>
                   {index + 1}
                 </Typography>
                 <Checkbox
                   checked={todo.completed}
+                  sx={{
+                    color: '#8a857d',
+                    padding: '6px',
+                  }}
                   onChange={() =>
                     updateTodo({
                       variables: {
@@ -84,7 +105,15 @@ export const TodoListForm = ({ todoList }) => {
                   }
                 />
                 <TextField
-                  sx={{ flexGrow: 1, marginTop: '1rem' }}
+                  sx={{
+                    flexGrow: 1,
+                    '& .MuiOutlinedInput-root': {
+                      backgroundColor: '#ffffff',
+                      borderRadius: '6px',
+                      '& fieldset': { borderColor: '#dcd5c8' },
+                    },
+                    '& .MuiInputLabel-root': { color: '#7b756d' },
+                  }}
                   label='What to do?'
                   defaultValue={todo.text}
                   onChange={(event) =>
@@ -97,7 +126,15 @@ export const TodoListForm = ({ todoList }) => {
                   }}
                 />
                 <TextField
-                  sx={{ marginLeft: '8px', marginTop: '1rem', minWidth: '150px' }}
+                  sx={{
+                    minWidth: '150px',
+                    '& .MuiOutlinedInput-root': {
+                      backgroundColor: '#ffffff',
+                      borderRadius: '6px',
+                      '& fieldset': { borderColor: '#dcd5c8' },
+                    },
+                    '& .MuiInputLabel-root': { color: '#7b756d' },
+                  }}
                   type='date'
                   label='Due date'
                   InputLabelProps={{ shrink: true }}
@@ -110,16 +147,18 @@ export const TodoListForm = ({ todoList }) => {
                 />
                 {remaining && (
                   <Chip
-                    sx={{ marginLeft: '8px' }}
+                    sx={{
+                      backgroundColor: remaining.color === 'error' ? '#f7e6e4' : '#f1efe9',
+                      borderRadius: '999px',
+                      color: remaining.color === 'error' ? '#9f3a32' : '#5f5a52',
+                    }}
                     label={remaining.text}
-                    color={remaining.color}
                     size='small'
                   />
                 )}
                 <Button
-                  sx={{ margin: '8px' }}
+                  sx={{ color: '#8a857d', minWidth: 0, padding: '8px' }}
                   size='small'
-                  color='secondary'
                   onClick={() => {
                     if (debounceTimers.current[todo.id]) {
                       clearTimeout(debounceTimers.current[todo.id])
@@ -135,7 +174,7 @@ export const TodoListForm = ({ todoList }) => {
                 {saveStatus[todo.id] && (
                   <Typography
                     variant='caption'
-                    sx={{ minWidth: '50px' }}
+                    sx={{ color: '#7b756d', minWidth: '50px' }}
                     color={saveStatus[todo.id] === 'error' ? 'error' : 'text.secondary'}
                   >
                     {saveStatus[todo.id] === 'saving'
@@ -145,23 +184,27 @@ export const TodoListForm = ({ todoList }) => {
                         : 'Error'}
                   </Typography>
                 )}
-              </div>
+              </Box>
             )
           })}
-          <CardActions>
-            <Button
-              color='primary'
-              onClick={() =>
-                addTodo({
-                  variables: { todoListId: todoList.id, text: '' },
-                })
-              }
-            >
-              Add Todo <AddIcon />
-            </Button>
-          </CardActions>
-        </div>
-      </CardContent>
-    </Card>
+        <Box sx={{ paddingTop: '1rem' }}>
+          <Button
+            sx={{
+              color: '#111111',
+              paddingInline: 0,
+              textTransform: 'none',
+              '&:hover': { backgroundColor: 'transparent' },
+            }}
+            onClick={() =>
+              addTodo({
+                variables: { todoListId: todoList.id, text: '' },
+              })
+            }
+          >
+            Add Todo <AddIcon sx={{ marginLeft: '0.25rem' }} />
+          </Button>
+        </Box>
+      </div>
+    </Box>
   )
 }
