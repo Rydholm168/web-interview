@@ -1,15 +1,10 @@
 import React, { Fragment, useState } from 'react'
 import {
   Box,
-  List,
-  ListItemButton,
-  ListItemText,
-  ListItemIcon,
+  ButtonBase,
   Typography,
   CircularProgress,
 } from '@mui/material'
-import ReceiptIcon from '@mui/icons-material/Receipt'
-import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import { useQuery } from '@apollo/client/react'
 import { GET_TODO_LISTS } from '../graphql'
 import { TodoListForm } from './TodoListForm'
@@ -18,7 +13,8 @@ const sectionStyle = {
   backgroundColor: '#ffffff',
   border: '1px solid #e7e3dc',
   borderRadius: '6px',
-  padding: '1.5rem',
+  overflow: 'hidden',
+  padding: '1.5rem 1.5rem 0',
 }
 
 export const TodoLists = ({ style }) => {
@@ -32,7 +28,8 @@ export const TodoLists = ({ style }) => {
 
   if (!todoLists.length) return null
 
-  const activeListData = todoLists.find((list) => list.id === activeList)
+  const selectedListId = activeList ?? todoLists[0]?.id
+  const activeListData = todoLists.find((list) => list.id === selectedListId)
 
   return (
     <Fragment>
@@ -55,37 +52,54 @@ export const TodoLists = ({ style }) => {
         >
           My Todo Lists
         </Typography>
-        <List sx={{ padding: 0 }}>
-          {todoLists.map((list, index) => (
-            <ListItemButton
+        <Box
+          sx={{
+            borderBottom: '1px solid #dfdbd2',
+            display: 'flex',
+            marginInline: '-1.5rem',
+            marginTop: '1rem',
+          }}
+        >
+          {todoLists.map((list) => {
+            const isActive = list.id === selectedListId
+
+            return (
+              <ButtonBase
               key={list.id}
               onClick={() => setActiveList(list.id)}
               sx={{
-                borderBottom:
-                  index === todoLists.length - 1 ? 'none' : '1px solid #f0ece5',
-                minHeight: '64px',
-                paddingInline: 0,
-                paddingBlock: '0.75rem',
+                alignItems: 'center',
+                backgroundColor: isActive ? '#f2f2f2' : 'transparent',
+                borderBottom: isActive ? '3px solid #111111' : '3px solid transparent',
+                color: '#262626',
+                display: 'flex',
+                flex: 1,
+                fontFamily: 'ballinger, sans-serif',
+                fontSize: '16px',
+                fontWeight: isActive ? 500 : 400,
+                height: '74px',
+                justifyContent: 'center',
+                lineHeight: '24px',
+                '&:hover': {
+                  backgroundColor: '#f2f2f2',
+                },
               }}
             >
-              <ListItemIcon sx={{ color: '#8a857d', minWidth: '3rem' }}>
-                {list.isComplete ? <CheckCircleIcon color='success' /> : <ReceiptIcon />}
-              </ListItemIcon>
-              <ListItemText
-                primary={list.title}
-                primaryTypographyProps={{
-                  sx: {
-                    color: list.isComplete ? '#7b756d' : '#1f1f1f',
-                    fontSize: '1.15rem',
+                <Box
+                  component='span'
+                  sx={{
+                    color: list.isComplete ? '#7b756d' : '#262626',
                     textDecoration: list.isComplete ? 'line-through' : 'none',
-                  },
-                }}
-              />
-            </ListItemButton>
-          ))}
-        </List>
+                  }}
+                >
+                  {list.title}
+                </Box>
+              </ButtonBase>
+            )
+          })}
+        </Box>
       </Box>
-      {activeListData && <TodoListForm key={activeList} todoList={activeListData} />}
+      {activeListData && <TodoListForm key={selectedListId} todoList={activeListData} />}
     </Fragment>
   )
 }
