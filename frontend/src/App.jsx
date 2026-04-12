@@ -8,20 +8,19 @@ const headerWrapperStyle = {
   borderBottom: '1px solid #e7e3dc',
   display: 'flex',
   height: '65px',
-  justifyContent: 'center',
-  padding: '0 1.5rem',
+  justifyContent: 'flex-start',
+  padding: '0 32px',
 }
 
 const headerContentStyle = {
   alignItems: 'center',
   display: 'flex',
-  maxWidth: '80rem',
-  width: '100%',
 }
 
 const logoStyle = {
   display: 'block',
   height: '54px',
+  marginLeft: '-10px',
   maxWidth: '100%',
   objectFit: 'contain',
   transform: 'translateY(10px)',
@@ -38,26 +37,23 @@ const MainHeader = () => {
 }
 
 const mainWrapperStyle = {
-  backgroundColor: '#f5f5f2',
+  backgroundColor: '#ffffff',
   display: 'flex',
   flexDirection: 'column',
   minHeight: '100vh',
 }
-const centerContentWrapper = { display: 'flex', justifyContent: 'center' }
 const contentWrapperStyle = {
   display: 'flex',
   flexDirection: 'column',
-  maxWidth: '80rem',
   flexGrow: 1,
+  padding: '1.5rem 32px',
   width: '100%',
 }
 const MainWrapper = ({ children }) => {
   return (
     <div style={mainWrapperStyle}>
       <MainHeader />
-      <div style={centerContentWrapper}>
-        <div style={contentWrapperStyle}>{children}</div>
-      </div>
+      <main style={contentWrapperStyle}>{children}</main>
     </div>
   )
 }
@@ -65,7 +61,7 @@ const MainWrapper = ({ children }) => {
 const App = () => {
   return (
     <MainWrapper>
-      <TodoLists style={{ margin: '1rem' }} />
+      <TodoLists />
     </MainWrapper>
   )
 }

@@ -10,14 +10,11 @@ import { GET_TODO_LISTS } from '../graphql'
 import { TodoListForm } from './TodoListForm'
 
 const sectionStyle = {
-  backgroundColor: '#ffffff',
-  border: '1px solid #e7e3dc',
-  borderRadius: '6px',
   overflow: 'hidden',
-  padding: '1.5rem 1.5rem 0',
+  padding: '1rem 0 0',
 }
 
-export const TodoLists = ({ style }) => {
+export const TodoLists = () => {
   const [activeList, setActiveList] = useState()
   const { data, loading, error } = useQuery(GET_TODO_LISTS)
 
@@ -33,7 +30,7 @@ export const TodoLists = ({ style }) => {
 
   return (
     <Fragment>
-      <Box style={style} sx={sectionStyle}>
+      <Box sx={sectionStyle}>
         <Typography
           component='h2'
           sx={{
@@ -56,8 +53,9 @@ export const TodoLists = ({ style }) => {
           sx={{
             borderBottom: '1px solid #dfdbd2',
             display: 'flex',
-            marginInline: '-1.5rem',
+            marginInline: 0,
             marginTop: '1rem',
+            overflowX: 'auto',
           }}
         >
           {todoLists.map((list) => {
@@ -73,13 +71,16 @@ export const TodoLists = ({ style }) => {
                 borderBottom: isActive ? '3px solid #111111' : '3px solid transparent',
                 color: '#262626',
                 display: 'flex',
-                flex: 1,
+                flex: { xs: '0 0 50%', sm: 1 },
                 fontFamily: 'ballinger, sans-serif',
                 fontSize: '16px',
                 fontWeight: isActive ? 500 : 400,
-                height: '74px',
+                height: { xs: '64px', sm: '74px' },
                 justifyContent: 'center',
                 lineHeight: '24px',
+                minWidth: { xs: '160px', sm: 0 },
+                paddingInline: '1rem',
+                whiteSpace: 'nowrap',
                 '&:hover': {
                   backgroundColor: '#f2f2f2',
                 },
