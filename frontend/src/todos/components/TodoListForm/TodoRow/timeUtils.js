@@ -1,3 +1,5 @@
+import { assetUrl } from '../../../../assetUrl'
+
 export const RemainingColor = {
   Success: 'success',
   Default: 'default',
@@ -5,13 +7,11 @@ export const RemainingColor = {
   Error: 'error',
 }
 
-const asset = (name) => `${import.meta.env.BASE_URL}${name}`
-
 export const REMAINING_ICON = {
-  [RemainingColor.Success]: asset('checkmark_circle.svg'),
-  [RemainingColor.Default]: asset('pending_clock.svg'),
-  [RemainingColor.Warning]: asset('warning_circle.svg'),
-  [RemainingColor.Error]: asset('warning_circle.svg'),
+  [RemainingColor.Success]: assetUrl('checkmark_circle.svg'),
+  [RemainingColor.Default]: assetUrl('pending_clock.svg'),
+  [RemainingColor.Warning]: assetUrl('warning_circle.svg'),
+  [RemainingColor.Error]: assetUrl('warning_circle.svg'),
 }
 
 export const STATUS_BAR_BACKGROUND = {

@@ -1,6 +1,7 @@
 import React from 'react'
 import { Box } from '@mui/material'
 import { TodoLists } from './todos/components/TodoLists'
+import { assetUrl } from './assetUrl'
 
 const headerWrapperStyle = {
   alignItems: 'center',
@@ -32,7 +33,7 @@ const MainHeader = () => {
       <Box style={headerContentStyle}>
         <img
           alt='Things to do'
-          src={`${import.meta.env.BASE_URL}final-things-to-do-logo-black.png`}
+          src={assetUrl('final-things-to-do-logo-black.png')}
           style={logoStyle}
         />
       </Box>

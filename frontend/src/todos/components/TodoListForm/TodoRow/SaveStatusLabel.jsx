@@ -1,6 +1,7 @@
 import React from 'react'
 import { Box } from '@mui/material'
 import { SaveStatus } from '../useDebouncedSave'
+import { assetUrl } from '../../../../assetUrl'
 
 const iconStyle = {
   height: '12px',
@@ -17,7 +18,7 @@ const LABELS = {
       <Box
         component='img'
         alt=''
-        src={`${import.meta.env.BASE_URL}checkmark.svg`}
+        src={assetUrl('checkmark.svg')}
         sx={iconStyle}
       />
     </>

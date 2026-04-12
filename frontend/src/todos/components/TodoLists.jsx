@@ -8,6 +8,7 @@ import {
 import { useQuery } from '@apollo/client/react'
 import { GET_TODO_LISTS } from '../graphql'
 import { TodoListForm } from './TodoListForm/TodoListForm'
+import { assetUrl } from '../../assetUrl'
 
 export const TodoLists = () => {
   const [activeList, setActiveList] = useState()
@@ -44,7 +45,7 @@ export const TodoLists = () => {
                     <Box
                       component='img'
                       alt=''
-                      src={`${import.meta.env.BASE_URL}checkmark_circle.svg`}
+                      src={assetUrl('checkmark_circle.svg')}
                       sx={tabCheckmarkStyle}
                     />
                   )}
