@@ -47,8 +47,8 @@ const secondaryFieldStyle = {
   ...textFieldStyle,
   minWidth: '170px',
   '& .MuiOutlinedInput-input': {
-    fontSize: '0.95rem',
-    paddingBlock: '13px',
+    fontSize: '1rem',
+    paddingBlock: '14px',
   },
 }
 
@@ -163,6 +163,7 @@ export const TodoListForm = ({ todoList }) => {
                   fontFamily: 'ballinger, sans-serif',
                   fontSize: '0.95rem',
                   fontWeight: 500,
+                  marginTop: '26px',
                   minWidth: '1.5rem',
                 }}
               >
@@ -173,6 +174,7 @@ export const TodoListForm = ({ todoList }) => {
                 sx={{
                   alignSelf: 'center',
                   color: '#8a857d',
+                  marginTop: '26px',
                   padding: '4px',
                   '&.Mui-checked': { color: '#262626' },
                 }}
@@ -302,7 +304,7 @@ export const TodoListForm = ({ todoList }) => {
               </Box>
               <Box
                 sx={{
-                  alignItems: 'center',
+                  alignItems: 'stretch',
                   display: 'flex',
                   flexWrap: 'wrap',
                   gap: '0.625rem',
@@ -316,6 +318,7 @@ export const TodoListForm = ({ todoList }) => {
                   sx={{
                     ...secondaryFieldStyle,
                     minWidth: { xs: '100%', sm: '170px' },
+                    marginTop: '26px',
                     width: { xs: '100%', sm: 'auto' },
                   }}
                   type='date'
@@ -330,7 +333,9 @@ export const TodoListForm = ({ todoList }) => {
                 />
                 <Button
                   sx={{
+                    alignSelf: 'center',
                     color: '#8a857d',
+                    marginTop: '26px',
                     minWidth: 0,
                     padding: '6px',
                     marginLeft: { xs: 'auto', sm: 0 },
