@@ -1,12 +1,5 @@
 import React, { useRef, useCallback, useEffect, useState } from 'react'
-import {
-  TextField,
-  Box,
-  Button,
-  Typography,
-  Checkbox,
-  Chip,
-} from '@mui/material'
+import { TextField, Box, Button, Typography, Checkbox } from '@mui/material'
 import DeleteIcon from '@mui/icons-material/Delete'
 import AddIcon from '@mui/icons-material/Add'
 import { useMutation } from '@apollo/client/react'
@@ -59,6 +52,26 @@ const secondaryFieldStyle = {
   },
 }
 
+const getRemainingBarStyle = (color) => ({
+  alignItems: 'center',
+  backgroundColor:
+    color === 'success'
+      ? 'rgb(220, 244, 229)'
+      : color === 'default'
+        ? 'rgb(153, 209, 255)'
+        : 'rgb(249, 169, 151)',
+  borderTopLeftRadius: '4px',
+  borderTopRightRadius: '4px',
+  color: '#3a3a3a',
+  display: 'flex',
+  fontFamily: 'ballinger, sans-serif',
+  fontSize: '0.9rem',
+  fontWeight: 400,
+  height: '26px',
+  paddingInline: '14px',
+  whiteSpace: 'nowrap',
+})
+
 const getRemainingText = (dueDate) => {
   if (!dueDate) return null
   const now = new Date()
@@ -108,61 +121,82 @@ export const TodoListForm = ({ todoList }) => {
         {todoList.title}
       </Typography>
       <Box sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
-          {todoList.todos.map((todo, index) => {
-            const remaining = getRemainingText(todo.dueDate)
-            return (
-              <Box
-                key={todo.id}
+        {todoList.todos.map((todo, index) => {
+          const remaining = todo.completed
+            ? { text: 'Complete', color: 'success' }
+            : getRemainingText(todo.dueDate)
+          return (
+            <Box
+              key={todo.id}
+              sx={{
+                borderBottom: index === todoList.todos.length - 1 ? 'none' : '1px solid #f0ece5',
+                display: 'grid',
+                gap: '0.875rem',
+                gridTemplateColumns: {
+                  xs: 'auto auto minmax(0, 1fr)',
+                  md: 'auto auto minmax(0, 1fr) auto',
+                },
+                gridTemplateRows: { xs: 'auto auto', md: 'auto' },
+                paddingBlock: '0.875rem',
+                width: '100%',
+              }}
+            >
+              <Typography
                 sx={{
-                  borderBottom:
-                    index === todoList.todos.length - 1 ? 'none' : '1px solid #f0ece5',
-                  display: 'grid',
-                  gap: '0.875rem',
-                  gridTemplateColumns: {
-                    xs: 'auto auto minmax(0, 1fr)',
-                    md: 'auto auto minmax(0, 1fr) auto',
-                  },
-                  gridTemplateRows: { xs: 'auto auto', md: 'auto' },
-                  paddingBlock: '0.875rem',
-                  width: '100%',
+                  alignSelf: 'center',
+                  color: '#5f5a52',
+                  fontFamily: 'ballinger, sans-serif',
+                  fontSize: '0.95rem',
+                  fontWeight: 500,
+                  minWidth: '1.5rem',
                 }}
               >
-                <Typography
-                  sx={{
-                    alignSelf: 'center',
-                    color: '#5f5a52',
-                    fontFamily: 'ballinger, sans-serif',
-                    fontSize: '0.95rem',
-                    fontWeight: 500,
-                    minWidth: '1.5rem',
-                  }}
-                >
-                  {index + 1}
-                </Typography>
-                <Checkbox
-                  checked={todo.completed}
-                  sx={{
-                    alignSelf: 'center',
-                    color: '#8a857d',
-                    padding: '4px',
-                    '&.Mui-checked': { color: '#262626' },
-                  }}
-                  onChange={() =>
-                    updateTodo({
-                      variables: {
-                        todoListId: todoList.id,
-                        todoId: todo.id,
-                        completed: !todo.completed,
-                      },
-                    })
-                  }
-                />
+                {index + 1}
+              </Typography>
+              <Checkbox
+                checked={todo.completed}
+                sx={{
+                  alignSelf: 'center',
+                  color: '#8a857d',
+                  padding: '4px',
+                  '&.Mui-checked': { color: '#262626' },
+                }}
+                onChange={() =>
+                  updateTodo({
+                    variables: {
+                      todoListId: todoList.id,
+                      todoId: todo.id,
+                      completed: !todo.completed,
+                    },
+                  })
+                }
+              />
+              <Box
+                sx={{
+                  gridColumn: { xs: '3 / 4', md: 'auto' },
+                  minWidth: 0,
+                  width: '100%',
+                  '&:focus-within .todo-status-bar': {
+                    boxShadow: 'inset 1px 0 0 #262626, inset -1px 0 0 #262626, inset 0 1px 0 #262626',
+                  },
+                }}
+              >
+                {remaining && (
+                  <Box className='todo-status-bar' sx={getRemainingBarStyle(remaining.color)}>
+                    {remaining.text}
+                  </Box>
+                )}
                 <TextField
                   sx={{
                     ...textFieldStyle,
-                    gridColumn: { xs: '3 / 4', md: 'auto' },
+                    width: '100%',
+                    '& .MuiOutlinedInput-root': {
+                      ...textFieldStyle['& .MuiOutlinedInput-root'],
+                      borderTopLeftRadius: remaining ? 0 : '6px',
+                      borderTopRightRadius: remaining ? 0 : '6px',
+                    },
                   }}
-                  label='What to do?'
+                  placeholder='What to do?'
                   defaultValue={todo.text}
                   onChange={(event) =>
                     debouncedUpdate(todoList.id, todo.id, { text: event.target.value })
@@ -173,91 +207,78 @@ export const TodoListForm = ({ todoList }) => {
                     },
                   }}
                 />
-                <Box
+              </Box>
+              <Box
+                sx={{
+                  alignItems: 'center',
+                  display: 'flex',
+                  flexWrap: 'wrap',
+                  gap: '0.625rem',
+                  gridColumn: { xs: '3 / 4', md: 'auto' },
+                  gridRow: { xs: '2 / 3', md: 'auto' },
+                  justifyContent: { xs: 'flex-start', md: 'flex-end' },
+                  minWidth: 0,
+                }}
+              >
+                <TextField
                   sx={{
-                    alignItems: 'center',
-                    display: 'flex',
-                    flexWrap: 'wrap',
-                    gap: '0.625rem',
-                    gridColumn: { xs: '3 / 4', md: 'auto' },
-                    gridRow: { xs: '2 / 3', md: 'auto' },
-                    justifyContent: { xs: 'flex-start', md: 'flex-end' },
+                    ...secondaryFieldStyle,
+                    minWidth: { xs: '100%', sm: '170px' },
+                    width: { xs: '100%', sm: 'auto' },
+                  }}
+                  type='date'
+                  label='Due date'
+                  InputLabelProps={{ shrink: true }}
+                  defaultValue={todo.dueDate || ''}
+                  onChange={(event) =>
+                    debouncedUpdate(todoList.id, todo.id, {
+                      dueDate: event.target.value || null,
+                    })
+                  }
+                />
+                {saveStatus[todo.id] && (
+                  <Typography
+                    variant='caption'
+                    sx={{
+                      color: '#7b756d',
+                      fontFamily: 'ballinger, sans-serif',
+                      minWidth: '50px',
+                      textAlign: { xs: 'left', md: 'right' },
+                    }}
+                    color={saveStatus[todo.id] === 'error' ? 'error' : 'text.secondary'}
+                  >
+                    {saveStatus[todo.id] === 'saving'
+                      ? 'Saving...'
+                      : saveStatus[todo.id] === 'saved'
+                        ? 'Saved'
+                        : 'Error'}
+                  </Typography>
+                )}
+                <Button
+                  sx={{
+                    color: '#8a857d',
                     minWidth: 0,
+                    padding: '6px',
+                    marginLeft: { xs: 'auto', sm: 0 },
+                    '&:hover': { backgroundColor: '#f3f1eb' },
+                  }}
+                  size='small'
+                  onClick={() => {
+                    if (debounceTimers.current[todo.id]) {
+                      clearTimeout(debounceTimers.current[todo.id])
+                      delete debounceTimers.current[todo.id]
+                    }
+                    deleteTodo({
+                      variables: { todoListId: todoList.id, todoId: todo.id },
+                    })
                   }}
                 >
-                  <TextField
-                    sx={{
-                      ...secondaryFieldStyle,
-                      minWidth: { xs: '100%', sm: '170px' },
-                      width: { xs: '100%', sm: 'auto' },
-                    }}
-                    type='date'
-                    label='Due date'
-                    InputLabelProps={{ shrink: true }}
-                    defaultValue={todo.dueDate || ''}
-                    onChange={(event) =>
-                      debouncedUpdate(todoList.id, todo.id, {
-                        dueDate: event.target.value || null,
-                      })
-                    }
-                  />
-                  {remaining && (
-                    <Chip
-                      sx={{
-                        backgroundColor: remaining.color === 'error' ? '#f7e6e4' : '#f1efe9',
-                        borderRadius: '999px',
-                        color: remaining.color === 'error' ? '#9f3a32' : '#5f5a52',
-                        fontFamily: 'ballinger, sans-serif',
-                        fontSize: '0.8rem',
-                        height: '30px',
-                      }}
-                      label={remaining.text}
-                      size='small'
-                    />
-                  )}
-                  {saveStatus[todo.id] && (
-                    <Typography
-                      variant='caption'
-                      sx={{
-                        color: '#7b756d',
-                        fontFamily: 'ballinger, sans-serif',
-                        minWidth: '50px',
-                        textAlign: { xs: 'left', md: 'right' },
-                      }}
-                      color={saveStatus[todo.id] === 'error' ? 'error' : 'text.secondary'}
-                    >
-                      {saveStatus[todo.id] === 'saving'
-                        ? 'Saving...'
-                        : saveStatus[todo.id] === 'saved'
-                          ? 'Saved'
-                          : 'Error'}
-                    </Typography>
-                  )}
-                  <Button
-                    sx={{
-                      color: '#8a857d',
-                      minWidth: 0,
-                      padding: '6px',
-                      marginLeft: { xs: 'auto', sm: 0 },
-                      '&:hover': { backgroundColor: '#f3f1eb' },
-                    }}
-                    size='small'
-                    onClick={() => {
-                      if (debounceTimers.current[todo.id]) {
-                        clearTimeout(debounceTimers.current[todo.id])
-                        delete debounceTimers.current[todo.id]
-                      }
-                      deleteTodo({
-                        variables: { todoListId: todoList.id, todoId: todo.id },
-                      })
-                    }}
-                  >
-                    <DeleteIcon />
-                  </Button>
-                </Box>
+                  <DeleteIcon />
+                </Button>
               </Box>
-            )
-          })}
+            </Box>
+          )
+        })}
         <Box sx={{ paddingTop: '1rem' }}>
           <Button
             sx={{
