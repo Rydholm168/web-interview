@@ -17,6 +17,15 @@ Persist the todo lists on the server. Persisting in a database is not required, 
 - Indicate that a todo list is completed if all todo items within are completed.
 - Add a date for completion to todo items. Indicate how much time is remaining or overdue.
 
+## Deployment
+
+- **Backend** deploys to Fly.io on every push to `master` that touches `backend/**`. Live at https://sellpy-todos-manu.fly.dev/. SQLite lives on a 1 GB Fly Volume mounted at `/data`.
+- **Frontend** deploys to GitHub Pages on every push to `master` that touches `frontend/**`. Live at https://rydholm168.github.io/web-interview/. The build reads the backend URL from `VITE_GRAPHQL_URL` and the sub-path from `VITE_BASE_PATH`, both set in the workflow.
+
+To deploy manually:
+- Backend: `cd backend && fly deploy --remote-only`
+- Frontend: push to master, or trigger the `Deploy frontend to GitHub Pages` workflow.
+
 ## Submission
 Before submitting, read through all changes one last time - **code quality matters**!
 

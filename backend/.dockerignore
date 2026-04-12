@@ -1,0 +1,8 @@
+node_modules
+npm-debug.log
+todos.db
+todos.db-journal
+todos.db-wal
+todos.db-shm
+.git
+.gitignore

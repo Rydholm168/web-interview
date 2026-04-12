@@ -6,7 +6,7 @@ import { CssBaseline, GlobalStyles, ThemeProvider, createTheme } from '@mui/mate
 import App from './App'
 
 const client = new ApolloClient({
-  link: new HttpLink({ uri: 'http://localhost:3001/' }),
+  link: new HttpLink({ uri: import.meta.env.VITE_GRAPHQL_URL ?? 'http://localhost:3001/' }),
   cache: new InMemoryCache(),
 })
 
