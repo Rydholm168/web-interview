@@ -38,6 +38,8 @@ Fork the repository (see top-right button on GitHub) and clone the fork to your 
  - Run `npm ci`
  - Run `npm start`
 
+Data is persisted in a SQLite database at `backend/todos.db`. The file is created automatically on first run and migrations in `backend/migrations/` are applied in order. To reset the data, stop the server and delete `backend/todos.db` (plus `-wal`/`-shm` sidecars if present); the next start will recreate it with seed data.
+
 ### To start the frontend:
 
  - Navigate to the frontend folder

@@ -5,3 +5,7 @@ frontend/dist
 # Backend
 backend/node_modules
 backend/npm-debug.log
+backend/todos.db
+backend/todos.db-journal
+backend/todos.db-wal
+backend/todos.db-shm

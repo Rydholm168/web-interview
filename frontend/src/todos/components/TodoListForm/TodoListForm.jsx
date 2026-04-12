@@ -18,6 +18,10 @@ export const TodoListForm = ({ todoList }) => {
       newTodoId.current = data.addTodo.id
     },
   })
+  const addTodoForList = useCallback(
+    () => addTodo({ variables: { todoListId: todoList.id, text: '' } }),
+    [addTodo, todoList.id],
+  )
   const [updateTodo] = useMutation(UPDATE_TODO, { refetchQueries: refetchTodoLists })
   const [deleteTodo] = useMutation(DELETE_TODO, { refetchQueries: refetchTodoLists })
 
@@ -46,6 +50,7 @@ export const TodoListForm = ({ todoList }) => {
             newTodoIdRef={newTodoId}
             updateTodo={updateTodo}
             deleteTodo={deleteTodo}
+            addTodo={addTodoForList}
             debouncedUpdate={debouncedUpdate}
             cancelDebounce={cancelDebounce}
           />
@@ -53,7 +58,7 @@ export const TodoListForm = ({ todoList }) => {
         <Box sx={addRowStyle}>
           <Button
             sx={addButtonStyle}
-            onClick={() => addTodo({ variables: { todoListId: todoList.id, text: '' } })}
+            onClick={addTodoForList}
           >
             Add Todo <AddIcon sx={addIconStyle} />
           </Button>

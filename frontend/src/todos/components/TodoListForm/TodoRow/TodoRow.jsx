@@ -18,6 +18,7 @@ export const TodoRow = ({
   newTodoIdRef,
   updateTodo,
   deleteTodo,
+  addTodo,
   debouncedUpdate,
   cancelDebounce,
 }) => {
@@ -26,17 +27,24 @@ export const TodoRow = ({
     ? { text: 'Complete', color: RemainingColor.Success }
     : getRemainingText(todo.dueDate)
 
+  const toggleCompleted = () =>
+    updateTodo({
+      variables: { todoListId, todoId: todo.id, completed: !todo.completed },
+    })
+
   return (
     <Box sx={getRowStyle(isLast)}>
       <Typography sx={indexStyle}>{index + 1}</Typography>
       <Checkbox
         checked={todo.completed}
         sx={checkboxStyle}
-        onChange={() =>
-          updateTodo({
-            variables: { todoListId, todoId: todo.id, completed: !todo.completed },
-          })
-        }
+        onChange={toggleCompleted}
+        onKeyDown={(event) => {
+          if (event.key === 'Enter') {
+            event.preventDefault()
+            toggleCompleted()
+          }
+        }}
       />
       <Box sx={inputColumnStyle}>
         <Box sx={statusRowStyle}>
@@ -80,6 +88,12 @@ export const TodoRow = ({
             }
           }}
           onChange={(event) => debouncedUpdate(todo.id, { text: event.target.value })}
+          onKeyDown={(event) => {
+            if (event.key === 'Enter') {
+              event.preventDefault()
+              addTodo()
+            }
+          }}
           inputProps={{
             style: { textDecoration: todo.completed ? 'line-through' : 'none' },
           }}
