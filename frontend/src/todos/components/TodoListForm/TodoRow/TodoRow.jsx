@@ -17,24 +17,23 @@ const REMAINING_ICON = {
   [RemainingColor.Error]: '/warning_circle.svg',
 }
 
+const MS_PER_DAY = 1000 * 60 * 60 * 24
+
+const daysUntil = (dateStr) => {
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  const target = new Date(dateStr + 'T00:00:00')
+  return Math.round((target - today) / MS_PER_DAY)
+}
+
+const pluralizeDays = (n) => `${n} day${n === 1 ? '' : 's'}`
+
 const getRemainingText = (dueDate) => {
   if (!dueDate) return null
-  const now = new Date()
-  now.setHours(0, 0, 0, 0)
-  const due = new Date(dueDate + 'T00:00:00')
-  const diffMs = due - now
-  const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24))
-  if (diffDays === 0) return { text: 'Due today', color: RemainingColor.Warning }
-  if (diffDays > 0)
-    return {
-      text: `${diffDays} day${diffDays === 1 ? '' : 's'} left`,
-      color: RemainingColor.Default,
-    }
-  const overdue = Math.abs(diffDays)
-  return {
-    text: `Overdue by ${overdue} day${overdue === 1 ? '' : 's'}`,
-    color: RemainingColor.Error,
-  }
+  const days = daysUntil(dueDate)
+  if (days === 0) return { text: 'Due today', color: RemainingColor.Warning }
+  if (days > 0) return { text: `${pluralizeDays(days)} left`, color: RemainingColor.Default }
+  return { text: `Overdue by ${pluralizeDays(-days)}`, color: RemainingColor.Error }
 }
 
 export const TodoRow = ({
