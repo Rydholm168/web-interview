@@ -5,11 +5,13 @@ export const RemainingColor = {
   Error: 'error',
 }
 
+const asset = (name) => `${import.meta.env.BASE_URL}${name}`
+
 export const REMAINING_ICON = {
-  [RemainingColor.Success]: '/checkmark_circle.svg',
-  [RemainingColor.Default]: '/pending_clock.svg',
-  [RemainingColor.Warning]: '/warning_circle.svg',
-  [RemainingColor.Error]: '/warning_circle.svg',
+  [RemainingColor.Success]: asset('checkmark_circle.svg'),
+  [RemainingColor.Default]: asset('pending_clock.svg'),
+  [RemainingColor.Warning]: asset('warning_circle.svg'),
+  [RemainingColor.Error]: asset('warning_circle.svg'),
 }
 
 export const STATUS_BAR_BACKGROUND = {

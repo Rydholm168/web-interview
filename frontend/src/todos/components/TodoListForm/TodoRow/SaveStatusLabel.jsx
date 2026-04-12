@@ -14,7 +14,12 @@ const LABELS = {
   [SaveStatus.Saved]: (
     <>
       Saved
-      <Box component='img' alt='' src='/checkmark.svg' sx={iconStyle} />
+      <Box
+        component='img'
+        alt=''
+        src={`${import.meta.env.BASE_URL}checkmark.svg`}
+        sx={iconStyle}
+      />
     </>
   ),
 }

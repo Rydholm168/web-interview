@@ -30,7 +30,11 @@ const MainHeader = () => {
   return (
     <header style={headerWrapperStyle}>
       <Box style={headerContentStyle}>
-        <img alt='Things to do' src='/final-things-to-do-logo-black.png' style={logoStyle} />
+        <img
+          alt='Things to do'
+          src={`${import.meta.env.BASE_URL}final-things-to-do-logo-black.png`}
+          style={logoStyle}
+        />
       </Box>
     </header>
   )

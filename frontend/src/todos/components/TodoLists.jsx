@@ -44,7 +44,7 @@ export const TodoLists = () => {
                     <Box
                       component='img'
                       alt=''
-                      src='/checkmark_circle.svg'
+                      src={`${import.meta.env.BASE_URL}checkmark_circle.svg`}
                       sx={tabCheckmarkStyle}
                     />
                   )}

@@ -116,7 +116,12 @@ export const TodoRow = ({
             deleteTodo({ variables: { todoListId, todoId: todo.id } })
           }}
         >
-          <Box component='img' alt='Delete' src='/close.svg' sx={deleteIconStyle} />
+          <Box
+            component='img'
+            alt='Delete'
+            src={`${import.meta.env.BASE_URL}close.svg`}
+            sx={deleteIconStyle}
+          />
         </Button>
       </Box>
     </Box>
