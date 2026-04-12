@@ -64,10 +64,11 @@ export const TodoLists = () => {
             return (
               <ButtonBase
               key={list.id}
+              disableRipple
               onClick={() => setActiveList(list.id)}
               sx={{
                 alignItems: 'center',
-                backgroundColor: 'transparent',
+                backgroundColor: list.isComplete ? 'rgb(220, 244, 229)' : 'transparent',
                 borderBottom: isActive ? '3px solid #111111' : '3px solid transparent',
                 color: '#262626',
                 display: 'flex',
@@ -82,7 +83,7 @@ export const TodoLists = () => {
                 paddingInline: '1rem',
                 whiteSpace: 'nowrap',
                 '&:hover': {
-                  backgroundColor: '#f2f2f2',
+                  backgroundColor: list.isComplete ? 'rgb(200, 234, 212)' : '#f2f2f2',
                 },
               }}
             >
@@ -90,9 +91,26 @@ export const TodoLists = () => {
                   component='span'
                   sx={{
                     color: list.isComplete ? '#7b756d' : '#262626',
+                    position: 'relative',
                     textDecoration: list.isComplete ? 'line-through' : 'none',
                   }}
                 >
+                  {list.isComplete && (
+                    <Box
+                      component='img'
+                      alt=''
+                      src='/checkmark_circle.svg'
+                      sx={{
+                        height: '18px',
+                        position: 'absolute',
+                        right: '100%',
+                        marginRight: '6px',
+                        top: '50%',
+                        transform: 'translateY(-50%)',
+                        width: '18px',
+                      }}
+                    />
+                  )}
                   {list.title}
                 </Box>
               </ButtonBase>

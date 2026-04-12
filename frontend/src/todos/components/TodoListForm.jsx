@@ -1,6 +1,5 @@
 import React, { useRef, useCallback, useEffect, useState } from 'react'
 import { TextField, Box, Button, Typography, Checkbox } from '@mui/material'
-import DeleteIcon from '@mui/icons-material/Delete'
 import AddIcon from '@mui/icons-material/Add'
 import { useMutation } from '@apollo/client/react'
 import { GET_TODO_LISTS, ADD_TODO, UPDATE_TODO, DELETE_TODO } from '../graphql'
@@ -97,9 +96,15 @@ const getRemainingText = (dueDate) => {
 
 export const TodoListForm = ({ todoList }) => {
   const debounceTimers = useRef({})
+  const newTodoId = useRef(null)
   const [saveStatus, setSaveStatus] = useState({})
 
-  const [addTodo] = useMutation(ADD_TODO, { refetchQueries: refetchTodoLists })
+  const [addTodo] = useMutation(ADD_TODO, {
+    refetchQueries: refetchTodoLists,
+    onCompleted: (data) => {
+      newTodoId.current = data.addTodo.id
+    },
+  })
   const [updateTodo] = useMutation(UPDATE_TODO, { refetchQueries: refetchTodoLists })
   const [deleteTodo] = useMutation(DELETE_TODO, { refetchQueries: refetchTodoLists })
 
@@ -205,7 +210,8 @@ export const TodoListForm = ({ todoList }) => {
                   {remaining ? (
                     <Box
                       className='todo-status-bar'
-                      sx={{ ...getRemainingBarStyle(remaining.color), width: '100%' }}
+                      onClick={(e) => e.currentTarget.parentElement.parentElement.querySelector('input')?.focus()}
+                      sx={{ ...getRemainingBarStyle(remaining.color), cursor: 'text', width: '100%' }}
                     >
                       <Box sx={{ alignItems: 'center', display: 'flex' }}>
                         <Box
@@ -292,6 +298,12 @@ export const TodoListForm = ({ todoList }) => {
                   }}
                   placeholder='What to do?'
                   defaultValue={todo.text}
+                  inputRef={(el) => {
+                    if (el && newTodoId.current === todo.id) {
+                      el.focus()
+                      newTodoId.current = null
+                    }
+                  }}
                   onChange={(event) =>
                     debouncedUpdate(todoList.id, todo.id, { text: event.target.value })
                   }
@@ -352,7 +364,7 @@ export const TodoListForm = ({ todoList }) => {
                     })
                   }}
                 >
-                  <DeleteIcon />
+                  <Box component='img' alt='Delete' src='/close.svg' sx={{ height: '16px', width: '16px' }} />
                 </Button>
               </Box>
             </Box>
