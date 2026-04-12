@@ -35,8 +35,8 @@ const textFieldStyle = {
     paddingBlock: '14px',
   },
   '& .MuiOutlinedInput-root': {
-    backgroundColor: '#ffffff',
-    borderRadius: '6px',
+    backgroundColor: 'rgb(250, 250, 250)',
+    borderRadius: '4px',
     '& fieldset': { borderColor: '#d8d0c3' },
     '&:hover fieldset': { borderColor: '#bfb6a8' },
     '&.Mui-focused fieldset': { borderColor: '#262626', borderWidth: '1px' },
@@ -54,12 +54,15 @@ const secondaryFieldStyle = {
 
 const getRemainingBarStyle = (color) => ({
   alignItems: 'center',
+  justifyContent: 'space-between',
   backgroundColor:
-    color === 'success'
-      ? 'rgb(220, 244, 229)'
-      : color === 'default'
-        ? 'rgb(153, 209, 255)'
-        : 'rgb(249, 169, 151)',
+    color === 'neutral'
+      ? 'rgb(240, 238, 233)'
+      : color === 'success'
+        ? 'rgb(220, 244, 229)'
+        : color === 'default'
+          ? 'rgb(153, 209, 255)'
+          : 'rgb(249, 169, 151)',
   borderTopLeftRadius: '4px',
   borderTopRightRadius: '4px',
   color: '#3a3a3a',
@@ -71,6 +74,12 @@ const getRemainingBarStyle = (color) => ({
   paddingInline: '14px',
   whiteSpace: 'nowrap',
 })
+
+const getRemainingIconSrc = (color) => {
+  if (color === 'success') return '/checkmark_circle.svg'
+  if (color === 'default') return '/pending_clock.svg'
+  return '/warning_circle.svg'
+}
 
 const getRemainingText = (dueDate) => {
   if (!dueDate) return null
@@ -107,7 +116,13 @@ export const TodoListForm = ({ todoList }) => {
       setSaveStatus((prev) => ({ ...prev, [todoId]: 'saving' }))
       debounceTimers.current[todoId] = setTimeout(() => {
         updateTodo({ variables: { todoListId, todoId, ...fields } })
-          .then(() => setSaveStatus((prev) => ({ ...prev, [todoId]: 'saved' })))
+          .then(() => {
+            setSaveStatus((prev) => ({ ...prev, [todoId]: 'saved' }))
+            setTimeout(() => setSaveStatus((prev) => {
+              const { [todoId]: _, ...rest } = prev
+              return rest
+            }), 2000)
+          })
           .catch(() => setSaveStatus((prev) => ({ ...prev, [todoId]: 'error' })))
         delete debounceTimers.current[todoId]
       }, 300)
@@ -179,13 +194,90 @@ export const TodoListForm = ({ todoList }) => {
                   '&:focus-within .todo-status-bar': {
                     boxShadow: 'inset 1px 0 0 #262626, inset -1px 0 0 #262626, inset 0 1px 0 #262626',
                   },
+                  '&:focus-within .todo-save-pill': {
+                    borderColor: '#262626',
+                  },
                 }}
               >
-                {remaining && (
-                  <Box className='todo-status-bar' sx={getRemainingBarStyle(remaining.color)}>
-                    {remaining.text}
-                  </Box>
-                )}
+                <Box sx={{ display: 'flex', justifyContent: 'flex-end', minHeight: '26px' }}>
+                  {remaining ? (
+                    <Box
+                      className='todo-status-bar'
+                      sx={{ ...getRemainingBarStyle(remaining.color), width: '100%' }}
+                    >
+                      <Box sx={{ alignItems: 'center', display: 'flex' }}>
+                        <Box
+                          component='img'
+                          alt=''
+                          aria-hidden='true'
+                          src={getRemainingIconSrc(remaining.color)}
+                          sx={{ height: '16px', marginRight: '8px', width: '16px' }}
+                        />
+                        {remaining.text}
+                      </Box>
+                      {saveStatus[todo.id] && (
+                        <Typography
+                          variant='caption'
+                          sx={{
+                            alignItems: 'center',
+                            color: saveStatus[todo.id] === 'error' ? '#c62828' : '#5f5a52',
+                            display: 'flex',
+                            fontFamily: 'ballinger, sans-serif',
+                            fontSize: '0.8rem',
+                          }}
+                        >
+                          {saveStatus[todo.id] === 'saving'
+                            ? 'Saving...'
+                            : saveStatus[todo.id] === 'saved'
+                              ? <>
+                                  Saved
+                                  <Box
+                                    component='img'
+                                    alt=''
+                                    src='/checkmark.svg'
+                                    sx={{ height: '12px', marginLeft: '4px', width: '12px' }}
+                                  />
+                                </>
+                              : 'Error'}
+                        </Typography>
+                      )}
+                    </Box>
+                  ) : saveStatus[todo.id] ? (
+                    <Box
+                      className='todo-save-pill'
+                      sx={{
+                        alignItems: 'center',
+                        backgroundColor: 'rgb(240, 238, 233)',
+                        borderColor: '#d8d0c3',
+                        borderRadius: '4px 4px 0 0',
+                        borderStyle: 'solid',
+                        borderWidth: '1px 1px 0 1px',
+                        color: saveStatus[todo.id] === 'error' ? '#c62828' : '#5f5a52',
+                        display: 'flex',
+                        fontFamily: 'ballinger, sans-serif',
+                        fontSize: '0.8rem',
+                        height: '26px',
+                        justifyContent: 'center',
+                        minWidth: '80px',
+                        paddingInline: '12px',
+                      }}
+                    >
+                      {saveStatus[todo.id] === 'saving'
+                        ? 'Saving...'
+                        : saveStatus[todo.id] === 'saved'
+                          ? <>
+                              Saved
+                              <Box
+                                component='img'
+                                alt=''
+                                src='/checkmark.svg'
+                                sx={{ height: '12px', marginLeft: '4px', width: '12px' }}
+                              />
+                            </>
+                          : 'Error'}
+                    </Box>
+                  ) : null}
+                </Box>
                 <TextField
                   sx={{
                     ...textFieldStyle,
@@ -193,7 +285,7 @@ export const TodoListForm = ({ todoList }) => {
                     '& .MuiOutlinedInput-root': {
                       ...textFieldStyle['& .MuiOutlinedInput-root'],
                       borderTopLeftRadius: remaining ? 0 : '6px',
-                      borderTopRightRadius: remaining ? 0 : '6px',
+                      borderTopRightRadius: remaining || (!remaining && saveStatus[todo.id]) ? 0 : '6px',
                     },
                   }}
                   placeholder='What to do?'
@@ -236,24 +328,6 @@ export const TodoListForm = ({ todoList }) => {
                     })
                   }
                 />
-                {saveStatus[todo.id] && (
-                  <Typography
-                    variant='caption'
-                    sx={{
-                      color: '#7b756d',
-                      fontFamily: 'ballinger, sans-serif',
-                      minWidth: '50px',
-                      textAlign: { xs: 'left', md: 'right' },
-                    }}
-                    color={saveStatus[todo.id] === 'error' ? 'error' : 'text.secondary'}
-                  >
-                    {saveStatus[todo.id] === 'saving'
-                      ? 'Saving...'
-                      : saveStatus[todo.id] === 'saved'
-                        ? 'Saved'
-                        : 'Error'}
-                  </Typography>
-                )}
                 <Button
                   sx={{
                     color: '#8a857d',
