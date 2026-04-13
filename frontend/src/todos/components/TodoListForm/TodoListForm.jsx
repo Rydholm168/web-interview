@@ -1,5 +1,5 @@
 import React, { useRef, useCallback } from 'react'
-import { Box, Button, Typography } from '@mui/material'
+import { Box, Fab, Typography } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
 import { useMutation } from '@apollo/client/react'
 import { GET_TODO_LISTS, ADD_TODO, UPDATE_TODO, DELETE_TODO } from '../../graphql'
@@ -55,15 +55,15 @@ export const TodoListForm = ({ todoList }) => {
             cancelDebounce={cancelDebounce}
           />
         ))}
-        <Box sx={addRowStyle}>
-          <Button
-            sx={addButtonStyle}
-            onClick={addTodoForList}
-          >
-            Add Todo <AddIcon sx={addIconStyle} />
-          </Button>
-        </Box>
       </Box>
+      <Fab
+        variant='extended'
+        color='primary'
+        onClick={addTodoForList}
+        sx={fabStyle}
+      >
+        Add Todo <AddIcon sx={addIconStyle} />
+      </Fab>
     </Box>
   )
 }
@@ -92,19 +92,20 @@ const listStyle = {
   flexGrow: 1,
 }
 
-const addRowStyle = {
-  paddingTop: '1rem',
-}
-
-const addButtonStyle = {
-  alignSelf: 'flex-start',
-  color: '#111111',
+const fabStyle = {
+  position: 'fixed',
+  bottom: '2rem',
+  right: '2rem',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  backgroundColor: '#111111',
+  color: '#ffffff',
   fontFamily: 'ballinger, sans-serif',
-  fontSize: '1rem',
   fontWeight: 500,
-  paddingInline: 0,
   textTransform: 'none',
-  '&:hover': { backgroundColor: 'transparent' },
+  zIndex: 1000,
+  '&:hover': { backgroundColor: '#000000' },
 }
 
 const addIconStyle = {
