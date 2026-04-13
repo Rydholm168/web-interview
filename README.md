@@ -1,67 +1,168 @@
-# Sellpy web interview
+# Sellpy Web Interview Case
 
-Welcome to Sellpy's web interview repo!
+This repository contains my solution to Sellpy's web interview assignment.
 
-## Assignment
-Your assignment is to improve this todo list application. At the moment the application is simple and can only create and remove todos.
-As is, nothing is persisted in the server. As a result all state is cleared when refreshing the page!
-Below follows one main task and 4 additional tasks. Your assignment is to complete the main task together with at least 2 out of 4 of the additional tasks.
-If you feel constrained by time (which is totally fine!), **prioritize quality over quantity**.
+The starter project was a small React app with mocked client-side state and a minimal Express backend that did not persist anything. My goal was to solve the main persistence task, complete the bonus tasks, and leave the app in a state that would be easy to explain and extend during the interview.
 
-### Main Task
-Persist the todo lists on the server. Persisting in a database is not required, i.e. simple JS structures like objects/arrays that don't persist between server restarts are fine. If you do go for an actual DB (again not required), be sure to include instructions of how to get it up and running.
+## Live Deployments
 
-### Additional tasks
-- Don't require users to press save when an item is added/edited in the todo list. (Autosave functionality)
-- Make it possible to indicate that a todo is completed.
-- Indicate that a todo list is completed if all todo items within are completed.
-- Add a date for completion to todo items. Indicate how much time is remaining or overdue.
+- Frontend: [https://rydholm168.github.io/web-interview/](https://rydholm168.github.io/web-interview/)
+- Backend: [https://sellpy-todos-manu.fly.dev/](https://sellpy-todos-manu.fly.dev/)
 
-## Deployment
+Deployments are automated through GitHub Actions:
 
-- **Backend** deploys to Fly.io on every push to `master` that touches `backend/**`. Live at https://sellpy-todos-manu.fly.dev/. SQLite lives on a 1 GB Fly Volume mounted at `/data`.
-- **Frontend** deploys to GitHub Pages on every push to `master` that touches `frontend/**`. Live at https://rydholm168.github.io/web-interview/. The build reads the backend URL from `VITE_GRAPHQL_URL` and the sub-path from `VITE_BASE_PATH`, both set in the workflow.
+- `frontend/**` changes deploy to GitHub Pages
+- `backend/**` changes deploy to Fly.io
 
-To deploy manually:
-- Backend: `cd backend && fly deploy --remote-only`
-- Frontend: push to master, or trigger the `Deploy frontend to GitHub Pages` workflow.
+## Assignment Coverage
 
-## Submission
-Before submitting, read through all changes one last time - **code quality matters**!
+### Main task
 
-If you have developed without ESLint set up, run `npm run lint` in both `/backend` and `/frontend` and fix any errors/warnings.
+- Persist todo lists on the server
 
-Send a link to your forked repository to your contact at Sellpy. Don't forget to mention which tasks you completed.
+Implemented with SQLite instead of in-memory JS objects. Data survives page refreshes, local server restarts, and backend redeploys in production.
 
-Don't forget to bring your computer to the interview, as you'll need it to make code changes during the session!
+### Additional tasks completed
 
-## Prerequisites
+- Autosave when adding or editing items
+- Mark a todo item as completed
+- Mark a todo list as completed when all items are completed
+- Add a completion date and show remaining time / overdue status
 
-NodeJS - if you don't already have it installed, check out [nvm](https://github.com/nvm-sh/nvm).
+## What Changed From The Starter
 
-## Getting started
-Fork the repository (see top-right button on GitHub) and clone the fork to your computer.
-### To start the backend:
+### Backend
 
- - Navigate to the backend folder
- - Run `npm ci`
- - Run `npm start`
+- Replaced the placeholder Express "Hello World" backend with a GraphQL API using Apollo Server
+- Added SQLite persistence with `better-sqlite3`
+- Added a small migration system that runs SQL files in `backend/migrations/`
+- Seeded the database with the two original todo lists from the starter
+- Added a Fly.io configuration for production deployment
 
-Data is persisted in a SQLite database at `backend/todos.db`. The file is created automatically on first run and migrations in `backend/migrations/` are applied in order. To reset the data, stop the server and delete `backend/todos.db` (plus `-wal`/`-shm` sidecars if present); the next start will recreate it with seed data.
+### Frontend
 
-### To start the frontend:
+- Replaced the mocked fetch flow with Apollo Client queries and mutations
+- Moved from Create React App to Vite
+- Split the todo form into smaller components for rows, save status, and time handling
+- Added debounced autosave with inline save feedback
+- Added completion checkboxes, due-date inputs, and list-level completion styling
+- Updated the UI to feel closer to Sellpy's website instead of a default MUI starter
 
- - Navigate to the frontend folder
- - Run `npm ci`
- - Run `npm start`
+## Current Feature Set
 
- A browsertab will automatically open and load the app.
+- View multiple todo lists
+- Switch between lists with tab-like navigation
+- Add a new todo with the floating action button (or by pressing the Enter key)
+- Create an empty todo row immediately and focus it for fast entry
+- Edit todo text with debounced autosave
+- Delete todo items
+- Mark items complete / incomplete
+- Automatically mark a list as complete when all of its items are complete
+- Set a due date per todo
+- Show deadline states: `X days left`, `Due today`, `Overdue by X days`, `Complete`
+- Show per-item save feedback: `Saving...`, `Saved`, `Error`
 
-### Development set-up
-If you don't have a favorite editor we highly recommend [VSCode](https://code.visualstudio.com). We've also had some ESLint rules set up which will help you catch bugs etc. If you're using VSCode, install the regular [ESLint plugin](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) and you should be good to go!
+## Architecture Overview
 
-You can open the root folder in one workspace, or `/frontend` and `/backend` in seperate workspaces - both should work fine.
+### Frontend
 
-Check `.nvmrc` to see what node version is required to run the project. Just run `nvm use` if you have `nvm` installed. Later versions of node might work fine as well, but probably not earlier versions.
+- React 18
+- Vite
+- MUI
+- Apollo Client
 
-For those of you using Prettier (not a requirement), there's an .prettierrc file to ensure no unnecessary changes to the existing code. It should be picked up automatically by Prettier.
+The frontend fetches todo lists through GraphQL and mutates individual todos for add, update, and delete operations.
+
+Autosave is handled with a small debouncing hook. Each todo row saves independently, which keeps the UI responsive and makes save state easy to display per item.
+
+### Backend
+
+- Node.js
+- Apollo Server
+- GraphQL
+- SQLite via `better-sqlite3`
+
+The backend exposes:
+
+- `Query.todoLists`
+- `Mutation.addTodo`
+- `Mutation.updateTodo`
+- `Mutation.deleteTodo`
+
+`isComplete` is derived in the resolver layer rather than stored in the database. That keeps the stored model simple and avoids syncing derived state.
+
+## Data Model
+
+### `todo_lists`
+
+- `id`
+- `title`
+- `created_at`
+
+### `todos`
+
+- `id`
+- `list_id`
+- `text`
+- `completed`
+- `due_date`
+- `created_at`
+
+Migrations are tracked in a `_migrations` table and applied automatically on startup.
+
+## Persistence Details
+
+### Local development
+
+- Local DB path: `backend/todos.db`
+- WAL mode is enabled
+- The database file is created automatically on first run
+- To reset local data, stop the backend and delete `backend/todos.db` plus any `-wal` / `-shm` sidecar files
+
+### Production
+
+- Fly.io mounts a persistent volume at `/data`
+- Production DB path is `/data/todos.db`
+- The Fly app keeps one machine running because SQLite is being used as a single-writer database
+
+That setup keeps the solution simple while still giving real persistence in production.
+
+## Deployment Setup
+
+### Frontend
+
+- Hosted on GitHub Pages
+- Build uses:
+  - `VITE_GRAPHQL_URL=https://sellpy-todos-manu.fly.dev/`
+  - `VITE_BASE_PATH=/web-interview/`
+- The workflow also copies `index.html` to `404.html` so the SPA works correctly on GitHub Pages
+
+### Backend
+
+- Hosted on Fly.io
+- Deploy command: `flyctl deploy --remote-only`
+- Triggered automatically on pushes to `master`
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js 20 (`.nvmrc`)
+
+### Backend
+
+Navigate to the backend folder
+
+```bash
+npm ci
+npm start
+```
+
+### Frontend
+
+navigate to the frontend folder
+
+```bash
+npm ci
+npm start
+```
