@@ -3,6 +3,37 @@ import { Box } from '@mui/material'
 import { TodoLists } from './todos/components/TodoLists'
 import { assetUrl } from './assetUrl'
 
+const App = () => {
+  return (
+    <MainWrapper>
+      <TodoLists />
+    </MainWrapper>
+  )
+}
+
+const MainWrapper = ({ children }) => {
+  return (
+    <div style={mainWrapperStyle}>
+      <MainHeader />
+      <main style={contentWrapperStyle}>{children}</main>
+    </div>
+  )
+}
+
+const MainHeader = () => {
+  return (
+    <header style={headerWrapperStyle}>
+      <Box style={headerContentStyle}>
+        <img
+          alt='Things to do'
+          src={assetUrl('final-things-to-do-logo-black.png')}
+          style={logoStyle}
+        />
+      </Box>
+    </header>
+  )
+}
+
 const headerWrapperStyle = {
   alignItems: 'center',
   backgroundColor: '#ffffff',
@@ -27,20 +58,6 @@ const logoStyle = {
   transform: 'translateY(10px)',
 }
 
-const MainHeader = () => {
-  return (
-    <header style={headerWrapperStyle}>
-      <Box style={headerContentStyle}>
-        <img
-          alt='Things to do'
-          src={assetUrl('final-things-to-do-logo-black.png')}
-          style={logoStyle}
-        />
-      </Box>
-    </header>
-  )
-}
-
 const mainWrapperStyle = {
   backgroundColor: '#ffffff',
   display: 'flex',
@@ -53,22 +70,6 @@ const contentWrapperStyle = {
   flexGrow: 1,
   padding: '1.5rem 32px',
   width: '100%',
-}
-const MainWrapper = ({ children }) => {
-  return (
-    <div style={mainWrapperStyle}>
-      <MainHeader />
-      <main style={contentWrapperStyle}>{children}</main>
-    </div>
-  )
-}
-
-const App = () => {
-  return (
-    <MainWrapper>
-      <TodoLists />
-    </MainWrapper>
-  )
 }
 
 export default App
