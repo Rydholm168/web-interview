@@ -100,26 +100,24 @@ export const TodoRow = ({
           }}
         />
       </Box>
-      <Box sx={trailingColumnStyle}>
-        <TextField
-          sx={dueDateFieldStyle}
-          type='date'
-          label='Due date'
-          InputLabelProps={{ shrink: true }}
-          defaultValue={todo.dueDate || ''}
-          onChange={(event) => debouncedUpdate(todo.id, { dueDate: event.target.value || null })}
-        />
-        <Button
-          sx={deleteButtonStyle}
-          size='small'
-          onClick={() => {
-            cancelDebounce(todo.id)
-            deleteTodo({ variables: { todoListId, todoId: todo.id } })
-          }}
-        >
-          <Box component='img' alt='Delete' src={assetUrl('close.svg')} sx={deleteIconStyle} />
-        </Button>
-      </Box>
+      <TextField
+        sx={dueDateFieldStyle}
+        type='date'
+        label='Due date'
+        InputLabelProps={{ shrink: true }}
+        defaultValue={todo.dueDate || ''}
+        onChange={(event) => debouncedUpdate(todo.id, { dueDate: event.target.value || null })}
+      />
+      <Button
+        sx={deleteButtonStyle}
+        size='small'
+        onClick={() => {
+          cancelDebounce(todo.id)
+          deleteTodo({ variables: { todoListId, todoId: todo.id } })
+        }}
+      >
+        <Box component='img' alt='Delete' src={assetUrl('close.svg')} sx={deleteIconStyle} />
+      </Button>
     </Box>
   )
 }
@@ -127,10 +125,11 @@ export const TodoRow = ({
 const getRowStyle = (isLast) => ({
   borderBottom: isLast ? 'none' : '1px solid #f0ece5',
   display: 'grid',
-  gap: '0.875rem',
+  columnGap: '0.875rem',
+  rowGap: '0.875rem',
   gridTemplateColumns: {
-    xs: 'auto auto minmax(0, 1fr)',
-    md: 'auto auto minmax(0, 1fr) auto',
+    xs: 'auto auto minmax(0, 1fr) auto',
+    md: 'auto auto minmax(0, 1fr) auto auto',
   },
   gridTemplateRows: { xs: 'auto auto', md: 'auto' },
   paddingBlock: '0.875rem',
@@ -156,7 +155,8 @@ const checkboxStyle = {
 }
 
 const inputColumnStyle = {
-  gridColumn: { xs: '3 / 4', md: 'auto' },
+  gridColumn: { xs: '3 / 4', md: '3 / 4' },
+  gridRow: { xs: '1 / 2', md: '1 / 2' },
   minWidth: 0,
   width: '100%',
   '&:focus-within .todo-status-bar': {
@@ -255,22 +255,13 @@ const getTextFieldStyle = (hasRemaining, hasStatus) => ({
   },
 })
 
-const trailingColumnStyle = {
-  alignItems: 'stretch',
-  display: 'flex',
-  flexWrap: 'wrap',
-  gap: '0.625rem',
-  gridColumn: { xs: '3 / 4', md: 'auto' },
-  gridRow: { xs: '2 / 3', md: 'auto' },
-  justifyContent: { xs: 'flex-start', md: 'flex-end' },
-  minWidth: 0,
-}
-
 const dueDateFieldStyle = {
   ...textFieldStyle,
   marginTop: '26px',
-  minWidth: { xs: '100%', sm: '170px' },
-  width: { xs: '100%', sm: 'auto' },
+  minWidth: '170px',
+  gridColumn: { xs: '3 / 5', md: '4 / 5' },
+  gridRow: { xs: '2 / 3', md: '1 / 2' },
+  justifySelf: { xs: 'flex-start', md: 'auto' },
 }
 
 const deleteButtonStyle = {
@@ -279,7 +270,8 @@ const deleteButtonStyle = {
   marginTop: '26px',
   minWidth: 0,
   padding: '6px',
-  marginLeft: { xs: 'auto', sm: 0 },
+  gridColumn: { xs: '4 / 5', md: '5 / 6' },
+  gridRow: '1 / 2',
   '&:hover': { backgroundColor: '#f3f1eb' },
 }
 
